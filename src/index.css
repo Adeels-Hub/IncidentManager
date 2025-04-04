@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optionally use @apply inside a custom class */
+body {
+  @apply bg-gray-900 text-white;
+}
+
+table th {
+  @apply text-left text-white bg-[#444] font-semibold;
+}
+
+table td {
+  @apply text-sm text-white border-b border-gray-700;
+}
+
+table {
+  @apply w-full;
+}
