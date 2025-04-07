@@ -24,7 +24,7 @@ const IncidentList: React.FC<Props> = ({ incidents }) => {
         >
           <img
             src={getPriorityIcon(incident.priority)}
-            alt="icon"
+            alt="priority"
             className="w-6 h-6 mt-1"
           />
           <div className="flex flex-col text-sm">

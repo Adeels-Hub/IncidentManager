@@ -1,12 +1,13 @@
 import React from 'react';
 import { useIncidents } from './hooks/useIncidents';
+import { useIsMobile } from './hooks/useIsMobile'; 
 import IncidentTable from './components/IncidentTable';
 import IncidentList from './components/IncidentList';
 import './index.css';
 
 const App: React.FC = () => {
   const { incidents, loading, error } = useIncidents();
-  const isMobile = window.innerWidth < 600;
+  const isMobile = useIsMobile(600); // responsive detection
 
   if (loading) return <p className="text-center text-gray-700 mt-4">Loading incidents...</p>;
   if (error) return <p className="text-center text-red-500 mt-4">Error loading incidents: {error.message}</p>;
@@ -21,7 +22,7 @@ const App: React.FC = () => {
         <IncidentTable incidents={incidents} />
       )}
     </div>
-  );  
+  );
 };
 
 export default App;

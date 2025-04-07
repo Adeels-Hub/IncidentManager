@@ -1,10 +1,26 @@
 import { useEffect, useState } from 'react';
 import { getLocations, getIncidentsByLocationId } from '../api/incidents';
 
-interface Incident {
+// Raw incident structure
+interface RawIncident {
+  id: string;
+  name: string;  
+  datetime: string;
+  priority: number;
+  locationId: string;
+}
+
+// Location from API
+interface Location {
   id: string;
   name: string;
-  description: string;
+  children?: Location[];
+}
+
+// Normalized structure used by the app
+interface Incident {
+  id: string;
+  name: string;  
   dateTime: string;
   priority: number;
   locationId: string;
@@ -17,43 +33,68 @@ interface UseIncidentsResult {
   error: Error | null;
 }
 
+// 🔄 Utility: Recursively flatten all locations
+const flattenLocations = (locations: Location[]): Location[] => {
+  const result: Location[] = [];
+
+  const recurse = (loc: Location) => {
+    result.push({ id: loc.id, name: loc.name });
+    if (loc.children) {
+      loc.children.forEach(recurse);
+    }
+  };
+
+  locations.forEach(recurse);
+  return result;
+};
+
 export const useIncidents = (): UseIncidentsResult => {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAllIncidents = async () => {
       try {
-        const locations = await getLocations();
-        const allIncidents: Incident[] = [];
+        const rawLocations = await getLocations();
+        const flatLocations = flattenLocations(rawLocations);
 
-        for (const loc of locations) {
-          const incidentsForLoc = await getIncidentsByLocationId(loc.id);
-          const enriched = incidentsForLoc.map((incident: any) => ({
-            id: incident.id,
-            name: incident.name,
-            description: incident.description ?? '',  // safe fallback
-            dateTime: incident.datetime,              // <-- FIXED THIS LINE
-            priority: incident.priority,
-            locationId: loc.id,
-            locationName: loc.name,
-          }));
-          
-          allIncidents.push(...enriched);
-        }
+        // 🗺️ Build a locationId → locationName map
+        const locationMap = new Map(flatLocations.map(loc => [loc.id, loc.name]));
 
-        const uniqueMap = new Map();
-        allIncidents.forEach((i) => {
-          if (!uniqueMap.has(i.id)) uniqueMap.set(i.id, i);
-        });
+        // 📥 Fetch incidents from all locations
+        const allIncidentsNested: Incident[][] = await Promise.all(
+          flatLocations.map(async (loc): Promise<Incident[]> => {
+            const incidentsForLoc: RawIncident[] = await getIncidentsByLocationId(loc.id);
 
-        const sorted = Array.from(uniqueMap.values()).sort((a, b) => {
+            return incidentsForLoc.map((incident: RawIncident): Incident => ({
+              id: incident.id,
+              name: incident.name,              
+              dateTime: incident.datetime,
+              priority: incident.priority,
+              locationId: incident.locationId,
+              locationName: locationMap.get(incident.locationId) ?? 'Unknown',
+            }));
+          })
+        );
+
+        const allIncidents: Incident[] = allIncidentsNested.flat();
+
+        // 🧼 Deduplicate by ID
+        const uniqueIncidents: Incident[] = allIncidents.reduce((acc: Incident[], current) => {
+          if (!acc.some(item => item.id === current.id)) {
+            acc.push(current);
+          }
+          return acc;
+        }, []);
+
+        // 🔃 Sort by priority ASC, date DESC
+        uniqueIncidents.sort((a, b) => {
           if (a.priority !== b.priority) return a.priority - b.priority;
           return new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime();
         });
 
-        setIncidents(sorted);
+        setIncidents(uniqueIncidents);
       } catch (err) {
         setError(err as Error);
       } finally {
@@ -61,7 +102,7 @@ export const useIncidents = (): UseIncidentsResult => {
       }
     };
 
-    fetchData();
+    fetchAllIncidents();
   }, []);
 
   return { incidents, loading, error };
