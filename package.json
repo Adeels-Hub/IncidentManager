@@ -7,7 +7,7 @@
       "dev": "vite",
       "build": "vite build",
       "preview": "vite preview",
-      "deploy": "npm run build && copyfiles -u 1 dist/index.html dist/404.html && gh-pages -d dist"
+      "deploy": "npm run build && copyfiles -u 1 docs/index.html docs/404.html && gh-pages -d docs"
     },
     "dependencies": {
       "dayjs": "^1.11.13",
