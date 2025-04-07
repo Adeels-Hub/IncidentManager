@@ -4,27 +4,27 @@
     "private": true,
     "homepage": "https://adeels-hub.github.io/incident-dashboard",
     "scripts": {
-      "dev": "vite",
-      "build": "vite build",
-      "preview": "vite preview",
-      "deploy": "npm run build && copyfiles -u 1 docs/index.html docs/404.html && gh-pages -d docs"
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "deploy": "npm run build && npx rimraf docs && copyfiles -u 1 dist/**/* docs && copyfiles dist/index.html docs/404.html"
     },
     "dependencies": {
-      "dayjs": "^1.11.13",
-      "react": "^18.2.0",
-      "react-dom": "^18.2.0"
+        "dayjs": "^1.11.13",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
     },
     "devDependencies": {
-      "@types/react": "^18.2.14",
-      "@types/react-dom": "^18.2.7",
-      "@vitejs/plugin-react": "^4.3.4",
-      "autoprefixer": "^10.4.21",
-      "copyfiles": "^2.4.1",
-      "gh-pages": "^6.3.0",
-      "postcss": "^8.4.33",
-      "tailwindcss": "^3.4.1",
-      "typescript": "^5.3.3",
-      "vite": "^4.5.0"
+        "@types/react": "^18.2.14",
+        "@types/react-dom": "^18.2.7",
+        "@vitejs/plugin-react": "^4.3.4",
+        "autoprefixer": "^10.4.21",
+        "copyfiles": "^2.4.1",
+        "gh-pages": "^6.3.0",
+        "postcss": "^8.4.33",
+        "rimraf": "^6.0.1",
+        "tailwindcss": "^3.4.1",
+        "typescript": "^5.3.3",
+        "vite": "^4.5.0"
     }
-  }
-  
+}
