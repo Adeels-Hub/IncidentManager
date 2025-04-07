@@ -2,11 +2,12 @@
     "name": "incident-dashboard",
     "version": "1.0.0",
     "private": true,
+    "homepage": "https://adeels-hub.github.io/incident-dashboard",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
-        "deploy": "vite build && copyfiles -u 1 dist/index.html dist/404.html && gh-pages -d dist"
+        "deploy": "vite build && copyfiles -u 1 dist/index.html dist/404.html && gh-pages -b feature/AddGitHubDeploymentSupport -d dist"
     },
     "dependencies": {
         "dayjs": "^1.11.13",
