@@ -1,4 +1,4 @@
-import fakeApi from '../js/fake-api.js';
+import fakeApi from './fake-api.js';
 
 export const getLocations = async () => {
   return await fakeApi.getLocations();
