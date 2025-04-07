@@ -4,7 +4,8 @@ import { getLocations, getIncidentsByLocationId } from '../api/incidents';
 // Raw incident structure
 interface RawIncident {
   id: string;
-  name: string;  
+  name: string;
+  description?: string;
   datetime: string;
   priority: number;
   locationId: string;
@@ -20,7 +21,8 @@ interface Location {
 // Normalized structure used by the app
 interface Incident {
   id: string;
-  name: string;  
+  name: string;
+  description: string;
   dateTime: string;
   priority: number;
   locationId: string;
@@ -69,7 +71,8 @@ export const useIncidents = (): UseIncidentsResult => {
 
             return incidentsForLoc.map((incident: RawIncident): Incident => ({
               id: incident.id,
-              name: incident.name,              
+              name: incident.name,
+              description: incident.description ?? '',
               dateTime: incident.datetime,
               priority: incident.priority,
               locationId: incident.locationId,
